@@ -17,7 +17,7 @@ namespace Perzepton
 
             for (Int32 i = 0; i < ausgabe.Length; i++)
             {
-                oN.Add(new output_Neuron(10));
+                oN.Add(new output_Neuron(4));
             }
 
             while (true)
@@ -30,7 +30,7 @@ namespace Perzepton
 
                 Int32[] w_in = new Int32[4] { 0, 0, 0, 0 };
                 Int32 eingabe = input(ref w_in, counter);
-                ausgabe_Erwartung[0] = 1;
+                ausgabe_Erwartung[eingabe] = 1;
 
                 Console.Write("Erlernte Ausgabe:\t");
                 for(Int32 i = 0;i < ausgabe.Length;i++)
@@ -53,7 +53,7 @@ namespace Perzepton
                     }
                 }
                 
-                if (counter%10 == 9)
+                if (counter%10 == 6)
                 {
                     c++;
                     Console.WriteLine(c);
@@ -128,7 +128,7 @@ class output_Neuron
     public output_Neuron(Int32 l)
     {
         this._eingabeWichtung = new Double[l];
-        this._schwellenWert = 1.5;
+        this._schwellenWert = 2.5;
 
         for (Int32 i = 0; i < _eingabeWichtung.Length; i++)
         {
