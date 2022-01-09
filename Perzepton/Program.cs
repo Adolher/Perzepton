@@ -10,52 +10,47 @@ namespace Perzepton
     {
         static void Main()
         {
-            List<output_Neuron> oN = new List<output_Neuron>();
-            Int32[] ausgabe = new Int32[10];
-            Int32[] ausgabe_Erwartung = new Int32[10];
+            List<Neuron> oN = new List<Neuron>();
+            Boolean[] ausgabe = new Boolean[10];
+            Boolean[] ra = new Boolean[] { false, false, false, false, false, false, false, false, false, false };
+            List<Boolean> ausgabe_Erwartung = new List<Boolean>();
+            ausgabe_Erwartung.AddRange(ra);
             Int32 counter = 0, c = 0;
 
             for (Int32 i = 0; i < ausgabe.Length; i++)
             {
-                oN.Add(new output_Neuron(4));
+                oN.Add(new Neuron());
             }
 
             while (true)
             {
                 for (Int32 i = 0; i < ausgabe.Length; i++)
                 {
-                    ausgabe[i] = 0;
-                    ausgabe_Erwartung[i] = 0;
+                    ausgabe[i] = false;
+                    ausgabe_Erwartung[i] = false;
                 }
 
-                Int32[] w_in = new Int32[4] { 0, 0, 0, 0 };
+                List<Boolean> w_in = new List<Boolean> { false, false, false, false };
                 Int32 eingabe = input(ref w_in, counter);
-                ausgabe_Erwartung[eingabe] = 1;
+                ausgabe_Erwartung[eingabe] = true;
 
                 Console.Write("Erlernte Ausgabe:\t");
                 for(Int32 i = 0;i < ausgabe.Length;i++)
                 {
-                    ausgabe[i] = oN[i].input(in w_in);
-                    Console.Write(ausgabe[i]);
+                    ausgabe[i] = oN[i].activate(in w_in, ausgabe_Erwartung[i]);
+                    Console.Write($" {i}{ausgabe[i]}");
                 }
                 Console.WriteLine();
                 Console.Write("Erwartete Ausgabe:\t");
                 for (Int32 i = 0; i < ausgabe.Length; i++)
                 {
-                    Console.Write(ausgabe_Erwartung[i]);
-                }
-
-                for (Int32 i = 0; i < ausgabe.Length; i++)
-                {
-                    if(ausgabe[i] != ausgabe_Erwartung[i])
-                    {
-                        oN[i].Delta_Regel_Training(in w_in, in ausgabe_Erwartung[i]);
-                    }
+                    Console.Write($" {i}{ausgabe_Erwartung[i]}");
                 }
                 
-                if (counter%10 == 6)
+                if (counter%10 == 0)
                 {
                     c++;
+                    Console.WriteLine();
                     Console.WriteLine(c);
                     Console.ReadKey(true);
                     Console.Clear();
@@ -67,7 +62,7 @@ namespace Perzepton
             
         }
 
-        static Int32 input(ref Int32[] w_in, Int32 counter)
+        static Int32 input(ref List<Boolean> w_in, Int32 counter)
         {
             Console.Write("\nZiffer eingeben: ");
             
@@ -80,106 +75,40 @@ namespace Perzepton
                 case 0:
                     break;
                 case 1:
-                    w_in[3] = 1;
+                    w_in[3] = true;
                     break;
                 case 2:
-                    w_in[2] = 1;
+                    w_in[2] = true;
                     break;
                 case 3:
-                    w_in[3] = 1;
-                    w_in[2] = 1;
+                    w_in[3] = true;
+                    w_in[2] = true;
                     break;
                 case 4:
-                    w_in[1] = 1;
+                    w_in[1] = true;
                     break;
                 case 5:
-                    w_in[3] = 1;
-                    w_in[1] = 1;
+                    w_in[3] = true;
+                    w_in[1] = true;
                     break;
                 case 6:
-                    w_in[2] = 1;
-                    w_in[1] = 1;
+                    w_in[2] = true;
+                    w_in[1] = true;
                     break;
                 case 7:
-                    w_in[3] = 1;
-                    w_in[2] = 1;
-                    w_in[1] = 1;
+                    w_in[3] = true;
+                    w_in[2] = true;
+                    w_in[1] = true;
                     break;
                 case 8:
-                    w_in[0] = 1;
+                    w_in[0] = true;
                     break;
                 case 9:
-                    w_in[3] = 1;
-                    w_in[0] = 1;
+                    w_in[3] = true;
+                    w_in[0] = true;
                     break;
             }
             return input;
         }
-    }
-}
-
-class output_Neuron
-{
-    private Double[] _eingabeWichtung;
-    private Double _schwellenWert;
-    private const Double _eW = 1.0;
-    private const Double _lernFaktor = 0.2;
-
-    public output_Neuron(Int32 l)
-    {
-        this._eingabeWichtung = new Double[l];
-        this._schwellenWert = 2.5;
-
-        for (Int32 i = 0; i < _eingabeWichtung.Length; i++)
-        {
-            _eingabeWichtung[i] = _eW;
-        }
-    }
-
-    public Int32 input(in Int32[] EingabeInformation)
-    {
-        Double Netzeingabe = _Propagierungsfunktion(in EingabeInformation);
-        Int32 Aktivierung = _Aktivierungsfunktion(in Netzeingabe);
-        Int32 Ausgabe = _Ausgabefunktion(in Aktivierung);
-        return Ausgabe;
-    }
-
-    public void Delta_Regel_Training(in Int32[] EingabeInformation, in Int32 AusgabeErwartung)
-    {
-        Int32 Ausgabe = input(in EingabeInformation);
-
-        Console.WriteLine();
-        for (Int32 i=0;i<EingabeInformation.Length;i++)
-        {
-            Console.Write($"{this._eingabeWichtung[i]} + {_lernFaktor} * ({AusgabeErwartung} - {Ausgabe}) * {EingabeInformation[i]} = ");
-            this._eingabeWichtung[i] = this._eingabeWichtung[i] + _lernFaktor * (AusgabeErwartung - Ausgabe) * EingabeInformation[i];
-            Console.WriteLine(this._eingabeWichtung[i]);
-            Console.Write(" ");
-        }
-    }
-
-    private Double _Propagierungsfunktion( in Int32[] EingabeInformation)
-    {
-        Double Netzeingabe = 0;
-
-        for(Int32 i = 0; i < EingabeInformation.Length; i++)
-        {
-            Netzeingabe += EingabeInformation[i] * this._eingabeWichtung[i];
-        }
-        return Netzeingabe;
-    }
-    private Int32 _Aktivierungsfunktion(in Double Netzeingabe)
-    {
-        if (Netzeingabe >= this._schwellenWert)
-            return 1;
-        else
-            return 0;
-    }
-    private Int32 _Ausgabefunktion(in Int32 Aktivierung)
-    {
-        if (Aktivierung == 1)
-            return 1;
-        else
-            return 0;
     }
 }
